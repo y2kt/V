@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Page base ===== */
+:root {
+  --blue: #1f3cff;
+  --blue-hover: #3550ff;
+  --lime: #b8f53d;
+  --ink: #0b0d14;
+  --night: #07080f;
+  --muted: #555a66;
+  --line: #d9dbe0;
+  --paper: #f4f4f2;
+  --done: #1f7a3f;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: Inter, system-ui, sans-serif; line-height: 1.4;
+}
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+.skip-link {
+  position: absolute; left: 16px; top: -100px; z-index: 10;
+  padding: 12px 16px; background: var(--ink); color: #fff; font-weight: 600;
+}
+.skip-link:focus { top: 16px; }
+.page { max-width: 1200px; margin: 0 auto; padding: 24px 40px 80px; }
+.page > * + * { margin-top: 56px; }
+.page-title {
+  margin: 0 0 16px; font-size: 12px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.page-title + .hero { margin-top: 0; }
+@media (max-width: 640px) { .page { padding: 16px 16px 56px; } .page > * + * { margin-top: 40px; } }
+
+/* ===== 1. Hero carousel ===== */
+.hero {
+  position: relative; display: flex; flex-direction: column; min-height: 460px;
+  padding: 28px 40px 36px; border-radius: 20px; overflow: hidden; color: #fff;
+  background: var(--night);
+}
+.hero__bgs { position: absolute; inset: 0; z-index: 0; }
+.hero__bg {
+  position: absolute; inset: 0; opacity: 0;
+  background-size: cover; background-position: center;
+  transition: opacity .8s ease;
+}
+.hero__bg.is-active { opacity: 1; }
+.hero__bgs::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgb(7 8 15 / .75) 0%, rgb(7 8 15 / .35) 45%, transparent 75%);
+}
+.hero__top, .hero__slides { position: relative; z-index: 1; }
+.hero__top { display: flex; align-items: center; gap: 16px; }
+.hero__bars { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.hero__bar { height: 3px; border-radius: 2px; overflow: hidden; background: rgb(255 255 255 / .2); }
+.hero__bar.is-active { background: rgb(255 255 255 / .4); }
+.hero__fill { display: block; height: 100%; background: #4a66ff; transform: scaleX(0); transform-origin: left; }
+.hero__btn {
+  width: 44px; height: 44px; display: grid; place-items: center; flex: none;
+  border-radius: 50%; border: 1px solid rgb(255 255 255 / .5);
+  background: rgb(255 255 255 / .06); color: #fff; cursor: pointer;
+}
+.hero__btn:hover { background: rgb(255 255 255 / .16); }
+.hero__btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.hero .icon-play path { fill: currentColor; }
+.hero .icon-play { display: none; }
+.hero.is-paused .icon-play { display: block; }
+.hero.is-paused .icon-pause { display: none; }
+.hero :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.hero__slides { flex: 1; display: flex; }
+.hero__slide { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 64px; }
+.hero__slide[hidden] { display: none; }
+.hero__tag {
+  position: absolute; top: 16px; right: 0; margin: 0; padding: 4px 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  background: rgb(255 255 255 / .12);
+}
+.hero__content { max-width: 440px; }
+.hero__eyebrow { margin: 0 0 12px; color: var(--lime); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.hero__title { margin: 0 0 20px; font-size: clamp(2.25rem, 5vw, 3.25rem); font-weight: 400; line-height: 1.05; letter-spacing: -.02em; }
+.hero__title strong { display: block; font-weight: 700; }
+.hero__kicker { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.hero__body { margin: 0 0 28px; font-size: 15px; line-height: 1.5; color: rgb(255 255 255 / .9); }
+.hero__cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 200px; height: 52px; padding: 0 28px; border-radius: 999px;
+  background: var(--blue); color: #fff; font-weight: 600; text-decoration: none;
+  box-shadow: 0 0 32px rgb(31 60 255 / .55);
+}
+.hero__cta:hover { background: var(--blue-hover); }
+.hero__nav { position: absolute; z-index: 1; right: 40px; bottom: 36px; display: flex; gap: 8px; }
+@media (prefers-reduced-motion: reduce) { .hero__bg { transition: none; } }
+@media (max-width: 640px) {
+  .hero { padding: 20px 20px 88px; }
+  .hero__nav { right: 20px; bottom: 20px; }
+  .hero__bgs::after { background: linear-gradient(0deg, rgb(7 8 15 / .8) 0%, rgb(7 8 15 / .4) 60%, transparent 100%); }
+}
+
+/* ===== 2. Pick up where you left off ===== */
+.resume__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+.eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.resume h2 { margin: 0; font-size: 28px; font-weight: 500; letter-spacing: -.01em; }
+.resume__all { font-size: 14px; font-weight: 600; color: var(--blue); text-decoration: none; white-space: nowrap; }
+.resume__all:hover { text-decoration: underline; }
+.resume :focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
+.resume__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 40px; align-items: center; }
+.feature {
+  display: flex; flex-direction: column; justify-content: flex-end;
+  min-height: 300px; padding: 28px; border-radius: 16px;
+  color: #fff; text-decoration: none;
+  background: radial-gradient(120% 100% at 100% 50%, #1f3cff 0%, #0c1660 35%, #000 70%);
+}
+.feature__type { font-size: 12px; font-weight: 600; color: var(--lime); }
+.feature h3 { margin: 6px 0 0; font-size: 24px; font-weight: 600; }
+.feature:hover h3 { text-decoration: underline; }
+.resume__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; margin: 0; padding: 0; list-style: none; }
+.mini { position: relative; display: flex; flex-direction: column; gap: 10px; }
+.mini__icon { width: 48px; height: 48px; margin-bottom: 24px; border-radius: 12px; background: var(--ink); }
+.mini a { font-size: 14px; font-weight: 600; color: var(--ink); text-decoration: none; }
+.mini a::after { content: ""; position: absolute; inset: 0; }
+.mini a:hover { text-decoration: underline; }
+.mini a:focus-visible { outline: none; }
+.mini:has(a:focus-visible) { outline: 2px solid var(--blue); outline-offset: 8px; }
+.mini progress { appearance: none; width: 100%; height: 4px; border: 0; border-radius: 2px; overflow: hidden; background: var(--line); }
+.mini progress::-webkit-progress-bar { background: var(--line); }
+.mini progress::-webkit-progress-value { background: var(--done); }
+.mini progress::-moz-progress-bar { background: var(--done); }
+.mini__meta { font-size: 12px; color: var(--muted); }
+@media (max-width: 820px) { .resume__grid { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .resume__list { grid-template-columns: 1fr; } }
+
+/* ===== 3. Explore by outcome ===== */
+.explore__title { margin: 0 0 16px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.pills { display: flex; gap: 8px; margin: -4px; padding: 4px; overflow-x: auto; scrollbar-width: none; }
+.pills::-webkit-scrollbar { display: none; }
+.pill {
+  flex: none; height: 48px; padding: 0 24px; border: 0; border-radius: 999px;
+  background: transparent; color: var(--ink); cursor: pointer; white-space: nowrap;
+  font-family: inherit; font-size: 15px; font-weight: 500;
+}
+.pill:hover { background: rgb(11 13 20 / .06); }
+.pill[aria-selected="true"] { background: var(--blue); color: #fff; }
+.pill:focus-visible, .explore__panel:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.explore__panel { padding-top: 24px; }
+.explore__panel p { margin: 0; color: var(--muted); }
+
+/* ===== 4. Promo carousel ===== */
+.promos { position: relative; padding: 40px; background: var(--night); }
+.promos__track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: min(560px, 85%); gap: 16px;
+  margin: -4px; padding: 4px; overflow-x: auto;
+  scroll-snap-type: x mandatory; scroll-padding-inline: 4px; scroll-behavior: smooth; scrollbar-width: none;
+}
+.promos__track::-webkit-scrollbar { display: none; }
+.promo {
+  position: relative; display: flex; flex-direction: column; min-height: 260px;
+  padding: 40px 48px; border-radius: 10px; overflow: hidden; scroll-snap-align: start;
+}
+.promo--dark { color: #fff; background: linear-gradient(90deg, #05060c 0%, #05060c 40%, #1631ff 100%); }
+.promo--light { color: var(--ink); background: #ececee; }
+.promo__eyebrow { margin: 0 0 12px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.promo--dark .promo__eyebrow { color: var(--lime); }
+.promo--light .promo__eyebrow { color: var(--muted); }
+.promo h3 { margin: 0; max-width: calc(100% - 120px); font-size: 28px; font-weight: 600; line-height: 1.2; }
+.promo h3 span { display: block; font-weight: 400; }
+.promo--light h3 span { color: #444956; }
+.promo__sphere {
+  position: absolute; top: 28px; right: 40px; width: 88px; height: 88px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #4a66ff 0%, #1631ff 30%, #0a1060 60%, #000 88%);
+}
+.promo__link { margin-top: auto; align-self: flex-start; padding-top: 32px; font-size: 13px; font-weight: 600; text-decoration: none; }
+.promo--dark .promo__link {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px;
+  border-radius: 999px; background: var(--blue); color: #fff; box-shadow: 0 0 20px rgb(31 60 255 / .5);
+}
+.promo--dark .promo__link:hover { background: var(--blue-hover); }
+.promo--light .promo__link { color: var(--ink); }
+.promo--light .promo__link:hover { text-decoration: underline; }
+.promo--dark :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.promo--light :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.promos__btn {
+  position: absolute; top: 50%; translate: 0 -50%;
+  width: 56px; height: 56px; display: grid; place-items: center;
+  border: 0; border-radius: 50%; background: #fff; color: var(--ink); cursor: pointer;
+  box-shadow: 0 4px 16px rgb(0 0 0 / .3); transition: opacity .2s;
+}
+.promos__btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.promos__btn:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+.promos__btn[disabled] { opacity: 0; pointer-events: none; }
+.promos__prev { left: 16px; }
+.promos__next { right: 16px; }
+@media (prefers-reduced-motion: reduce) { .promos__track { scroll-behavior: auto; } }
+@media (max-width: 640px) {
+  .promos { padding: 24px 16px 88px; }
+  .promo { padding: 28px; }
+  .promos__btn { top: auto; bottom: 16px; translate: none; width: 48px; height: 48px; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<main id="main" class="page">
+  <h1 class="page-title">Customer training</h1>
+
+  <!-- ===== 1. Hero carousel ===== -->
+  <section class="hero" aria-roledescription="carousel" aria-label="Featured learning">
+    <div class="hero__bgs" aria-hidden="true">
+      <div class="hero__bg" style="background-image:url('https://img.magnific.com/free-photo/abstract-luxury-gradient-blue-background-smooth-dark-blue-with-black-vignette-studio-banner_1258-52393.jpg?semt=ais_hybrid&w=740&q=80')"></div>
+      <div class="hero__bg" style="background-image:url('https://img.magnific.com/premium-vector/dark-blue-background-with-blue-gradient_1055519-2175.jpg?semt=ais_hybrid&w=740&q=80')"></div>
+      <div class="hero__bg" style="background-image:url('https://wallpapers.com/images/hd/dark-blue-gradient-jklyvge14bo7pdhe.jpg')"></div>
+    </div>
+
+    <div class="hero__top">
+      <div class="hero__bars" aria-hidden="true">
+        <span class="hero__bar"><span class="hero__fill"></span></span>
+        <span class="hero__bar"><span class="hero__fill"></span></span>
+        <span class="hero__bar"><span class="hero__fill"></span></span>
+      </div>
+      <button class="hero__btn hero__pause" type="button" aria-label="Pause slideshow">
+        <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>
+        <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>
+      </button>
+    </div>
+
+    <div class="hero__slides" aria-live="off">
+      <div class="hero__slide" role="group" aria-roledescription="slide" aria-label="1 of 3">
+        <p class="hero__tag">On-demand learning</p>
+        <div class="hero__content">
+          <p class="hero__eyebrow">Your next step starts here</p>
+          <h2 class="hero__title">Start with <strong>confidence.</strong></h2>
+          <p class="hero__kicker">Build your skills</p>
+          <p class="hero__body">Build the skills to protect what matters. Expert-led courses, hands-on labs, and learning paths built for you.</p>
+          <a class="hero__cta" href="#">Start learning</a>
+        </div>
+      </div>
+      <div class="hero__slide" role="group" aria-roledescription="slide" aria-label="2 of 3" hidden>
+        <p class="hero__tag">Hands-on labs</p>
+        <div class="hero__content">
+          <p class="hero__eyebrow">Learn by doing</p>
+          <h2 class="hero__title">Practice in <strong>real scenarios.</strong></h2>
+          <p class="hero__kicker">Training labs</p>
+          <p class="hero__body">Work through guided labs that mirror the problems your team solves every day.</p>
+          <a class="hero__cta" href="#">Explore labs</a>
+        </div>
+      </div>
+      <div class="hero__slide" role="group" aria-roledescription="slide" aria-label="3 of 3" hidden>
+        <p class="hero__tag">Certification</p>
+        <div class="hero__content">
+          <p class="hero__eyebrow">Prove what you know</p>
+          <h2 class="hero__title">Earn your <strong>certification.</strong></h2>
+          <p class="hero__kicker">Academy</p>
+          <p class="hero__body">Structured paths and assessments that show what you can do.</p>
+          <a class="hero__cta" href="#">View certifications</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__nav">
+      <button class="hero__btn hero__prev" type="button" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      </button>
+      <button class="hero__btn hero__next" type="button" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== 2. Pick up where you left off ===== -->
+  <section class="resume" aria-labelledby="resume-title">
+    <header class="resume__head">
+      <div>
+        <p class="eyebrow">Recommended for you</p>
+        <h2 id="resume-title">Pick up where you left off</h2>
+      </div>
+      <a class="resume__all" href="#">View all<span class="sr-only"> courses</span> <span aria-hidden="true">→</span></a>
+    </header>
+    <div class="resume__grid">
+      <a class="feature" href="#">
+        <span class="feature__type">Course</span>
+        <h3>Platform essentials</h3>
+      </a>
+      <ul class="resume__list">
+        <li class="mini">
+          <span class="mini__icon" aria-hidden="true"></span>
+          <a href="#">Discover sensitive data</a>
+          <progress value="30" max="100" aria-hidden="true"></progress>
+          <span class="mini__meta">30% complete</span>
+        </li>
+        <li class="mini">
+          <span class="mini__icon" aria-hidden="true"></span>
+          <a href="#">Reduce your data risk</a>
+          <progress value="55" max="100" aria-hidden="true"></progress>
+          <span class="mini__meta">55% complete</span>
+        </li>
+        <li class="mini">
+          <span class="mini__icon" aria-hidden="true"></span>
+          <a href="#">Investigate threats faster</a>
+          <progress value="80" max="100" aria-hidden="true"></progress>
+          <span class="mini__meta">80% complete</span>
+        </li>
+        <li class="mini">
+          <span class="mini__icon" aria-hidden="true"></span>
+          <a href="#">Protect your AI data</a>
+          <progress value="100" max="100" aria-hidden="true"></progress>
+          <span class="mini__meta">Complete</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== 3. Explore by outcome ===== -->
+  <section class="explore">
+    <h2 class="explore__title" id="explore-title">Explore by outcome</h2>
+    <div class="pills" role="tablist" aria-labelledby="explore-title">
+      <button class="pill" role="tab" id="tab-start" aria-controls="panel-start" aria-selected="true">Get started</button>
+      <button class="pill" role="tab" id="tab-find" aria-controls="panel-find" aria-selected="false" tabindex="-1">Find, fix &amp; alert</button>
+      <button class="pill" role="tab" id="tab-role" aria-controls="panel-role" aria-selected="false" tabindex="-1">Learn by role</button>
+      <button class="pill" role="tab" id="tab-coverage" aria-controls="panel-coverage" aria-selected="false" tabindex="-1">Learn by coverage</button>
+      <button class="pill" role="tab" id="tab-usecase" aria-controls="panel-usecase" aria-selected="false" tabindex="-1">Learn by use case</button>
+      <button class="pill" role="tab" id="tab-releases" aria-controls="panel-releases" aria-selected="false" tabindex="-1">Latest releases</button>
+    </div>
+    <div class="explore__panel" role="tabpanel" id="panel-start" aria-labelledby="tab-start" tabindex="0"><p>Get started content.</p></div>
+    <div class="explore__panel" role="tabpanel" id="panel-find" aria-labelledby="tab-find" tabindex="0" hidden><p>Find, fix &amp; alert content.</p></div>
+    <div class="explore__panel" role="tabpanel" id="panel-role" aria-labelledby="tab-role" tabindex="0" hidden><p>Learn by role content.</p></div>
+    <div class="explore__panel" role="tabpanel" id="panel-coverage" aria-labelledby="tab-coverage" tabindex="0" hidden><p>Learn by coverage content.</p></div>
+    <div class="explore__panel" role="tabpanel" id="panel-usecase" aria-labelledby="tab-usecase" tabindex="0" hidden><p>Learn by use case content.</p></div>
+    <div class="explore__panel" role="tabpanel" id="panel-releases" aria-labelledby="tab-releases" tabindex="0" hidden><p>Latest releases content.</p></div>
+  </section>
+
+  <!-- ===== 4. Promo carousel ===== -->
+  <section class="promos" aria-roledescription="carousel" aria-labelledby="promos-title">
+    <h2 class="sr-only" id="promos-title">Training programs</h2>
+    <div class="promos__track" id="promo-track">
+      <article class="promo promo--dark" aria-roledescription="slide" aria-label="1 of 3">
+        <p class="promo__eyebrow">Training labs</p>
+        <h3>Practice. Explore. <span>Build confidence.</span></h3>
+        <span class="promo__sphere" aria-hidden="true"></span>
+        <a class="promo__link" href="#">Explore labs <span aria-hidden="true">→</span></a>
+      </article>
+      <article class="promo promo--light" aria-roledescription="slide" aria-label="2 of 3">
+        <p class="promo__eyebrow">Protection academy</p>
+        <h3>Learn. Grow. <span>Succeed with us.</span></h3>
+        <span class="promo__sphere" aria-hidden="true"></span>
+        <a class="promo__link" href="#">Explore certifications <span aria-hidden="true">→</span></a>
+      </article>
+      <article class="promo promo--dark" aria-roledescription="slide" aria-label="3 of 3">
+        <p class="promo__eyebrow">Learning paths</p>
+        <h3>Plan. Progress. <span>Get certified.</span></h3>
+        <span class="promo__sphere" aria-hidden="true"></span>
+        <a class="promo__link" href="#">Browse paths <span aria-hidden="true">→</span></a>
+      </article>
+    </div>
+    <button class="promos__btn promos__prev" type="button" aria-controls="promo-track" aria-label="Previous">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+    </button>
+    <button class="promos__btn promos__next" type="button" aria-controls="promo-track" aria-label="Next">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </section>
+</main>
+
+<script>
+/* ===== 1. Hero carousel ===== */
+(() => {
+  const hero = document.querySelector('.hero');
+  const slides = [...hero.querySelectorAll('.hero__slide')];
+  const bgs = [...hero.querySelectorAll('.hero__bg')];
+  const fills = [...hero.querySelectorAll('.hero__fill')];
+  const region = hero.querySelector('.hero__slides');
+  const pauseBtn = hero.querySelector('.hero__pause');
+  const DURATION = 7000;
+  let index = 0, elapsed = 0, last = performance.now(), held = false;
+  let playing = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function paint() {
+    fills.forEach((f, k) => {
+      const p = k < index ? 1 : k === index ? elapsed / DURATION : 0;
+      f.style.transform = `scaleX(${p})`;
+      f.parentElement.classList.toggle('is-active', k === index);
+    });
+  }
+  function show(n) {
+    index = (n + slides.length) % slides.length;
+    slides.forEach((s, k) => (s.hidden = k !== index));
+    bgs.forEach((b, k) => b.classList.toggle('is-active', k === index));
+    elapsed = 0;
+    paint();
+  }
+  function setPlaying(v) {
+    playing = v;
+    hero.classList.toggle('is-paused', !v);
+    pauseBtn.setAttribute('aria-label', v ? 'Pause slideshow' : 'Play slideshow');
+    region.setAttribute('aria-live', v ? 'off' : 'polite');
+  }
+  function tick(t) {
+    if (playing && !held) {
+      elapsed += t - last;
+      elapsed >= DURATION ? show(index + 1) : paint();
+    }
+    last = t;
+    requestAnimationFrame(tick);
+  }
+
+  pauseBtn.addEventListener('click', () => setPlaying(!playing));
+  hero.querySelector('.hero__prev').addEventListener('click', () => { setPlaying(false); show(index - 1); });
+  hero.querySelector('.hero__next').addEventListener('click', () => { setPlaying(false); show(index + 1); });
+  hero.addEventListener('mouseenter', () => (held = true));
+  hero.addEventListener('mouseleave', () => (held = false));
+  hero.addEventListener('focusin', () => (held = true));
+  hero.addEventListener('focusout', e => { if (!hero.contains(e.relatedTarget)) held = false; });
+
+  setPlaying(playing);
+  show(0);
+  requestAnimationFrame(tick);
+})();
+
+/* ===== 3. Explore tabs ===== */
+(() => {
+  const list = document.querySelector('.explore [role="tablist"]');
+  const tabs = [...list.querySelectorAll('[role="tab"]')];
+
+  function select(tab) {
+    tabs.forEach(t => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', on);
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    tab.focus();
+    tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+
+  list.addEventListener('click', e => {
+    const t = e.target.closest('[role="tab"]');
+    if (t) select(t);
+  });
+  list.addEventListener('keydown', e => {
+    const i = tabs.indexOf(document.activeElement);
+    const keys = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 };
+    if (!(e.key in keys)) return;
+    e.preventDefault();
+    select(tabs[(keys[e.key] + tabs.length) % tabs.length]);
+  });
+})();
+
+/* ===== 4. Promo carousel ===== */
+(() => {
+  const root = document.querySelector('.promos');
+  const track = root.querySelector('.promos__track');
+  const prev = root.querySelector('.promos__prev');
+  const next = root.querySelector('.promos__next');
+  const step = () => track.querySelector('.promo').offsetWidth + 16;
+
+  function update() {
+    const max = track.scrollWidth - track.clientWidth - 8;
+    prev.disabled = track.scrollLeft <= 8;
+    next.disabled = track.scrollLeft >= max;
+    if (document.activeElement === next && next.disabled) prev.focus();
+    if (document.activeElement === prev && prev.disabled) next.focus();
+  }
+
+  prev.addEventListener('click', () => track.scrollBy({ left: -step() }));
+  next.addEventListener('click', () => track.scrollBy({ left: step() }));
+  track.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+</body>
+</html>
